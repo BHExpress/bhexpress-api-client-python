@@ -1,0 +1,25 @@
+# Archivos de desarrollo
+venv
+.vscode/
+__pycache__
+*.pyc
+
+# Archivos de documentación
+docs/_build/
+docs/html/
+docs/*.doctrees
+docs/.buildinfo
+
+# Archivos de distribución
+dist
+bhexpress.egg-info
+
+# Archivos del sistema
+.DS_Store
+
+# Archivos de tests
+tests/test.env
+tests/*.json
+tests/*.csv
+tests/*.pdf
+tests/*.html

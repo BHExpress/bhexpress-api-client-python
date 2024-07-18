@@ -54,7 +54,7 @@ parser.add_argument(
     'test_case',
     nargs = '?',
     default = None,
-    help = 'Permite especificar un test a ejecutar (ej: "sii.test_contribuyentes")'
+    help = 'Permite especificar un test a ejecutar (ej: "boletas.test_boletas")'
 )
 args = parser.parse_args()
 

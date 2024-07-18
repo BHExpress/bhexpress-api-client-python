@@ -17,122 +17,114 @@
 # <http://www.gnu.org/licenses/lgpl.html>.
 #
 
-from os import getenv
-import requests
 from .. import ApiBase
 
 class Boleta(ApiBase):
+    '''
+    Módulo que permite listar todas las BHE con filtros específicos, emitir una BHE, obtener un PDF de una BHE, enviar una BHE a un email, y anular una BHE emitida.
+    
+    :param str api_token: Token de autenticación del usuario. Si no se proporciona, se intentará obtener de una variable de entorno.
+    :param str api_url: URL base de la API. Si no se proporciona, se usará una URL por defecto.
+    :param str api_version: Versión de la API. Si no se proporciona, se usará una versión por defecto.
+    :param bool api_raise_for_status: Si se debe lanzar una excepción automáticamente para respuestas de error HTTP. Por defecto es True.
+    '''
 
     def __init__(self):
         super().__init__()
 
-    '''
-    Recurso que permite obtener el listado paginado de boletas de honorarios electrónicas emitidas.
+    def listar(self, periodo = None, fecha_desde = None, fecha_hasta = None, receptor_codigo = None):
+        '''
+        Recurso que permite obtener el listado paginado de boletas de honorarios electrónicas emitidas.
 
-    Los parámetros de entrada son filtros para obtener boletas más específicas.
+        Los parámetros de entrada son filtros para obtener boletas más específicas.
 
-    :param str periodo: Período por el cuál consultar las boletas. Puede ser: 'AAAAMM' o 'AAAA'
-    :param str fechaDesde:Fecha desde cuándo consultar las boletas. Formato: 'AAAA-MM-DD'
-    :param str fechaHasta:Fecha hasta cuándo consultar las boletas. Formato: 'AAAA-MM-DD'
-    :param str receptorCodigo: Código del receptor. Generalmente es el RUT del receptor sin DV.
-    :return: Respuesta JSON con el listado de boletas emitidas.
-    :rtype: dict
-    :exception ApiException: Arroja un error cuando las fechas de fechaDesde y fechaHasta no son correctas, o cuando se coloca sólo una de las dos.
-    '''
-    def listar(self, periodo=None, fechaDesde=None, fechaHasta=None, receptorCodigo=None):
+        :param str periodo: Período por el cuál consultar las boletas. Puede ser: 'AAAAMM' o 'AAAA'
+        :param str fecha_desde:Fecha desde cuándo consultar las boletas. Formato: 'AAAA-MM-DD'
+        :param str fecha_hasta:Fecha hasta cuándo consultar las boletas. Formato: 'AAAA-MM-DD'
+        :param str receptor_codigo: Código del receptor. Generalmente es el RUT del receptor sin DV.
+        :return: Respuesta JSON con el listado de boletas emitidas.
+        :rtype: dict
+        :exception ApiException: Arroja un error cuando las fechas de fecha_desde y fecha_hasta no son correctas, o cuando se coloca sólo una de las dos.
+        '''
+
         url = '/bhe/boletas'
-        rut = getenv('BHEXPRESS_EMISOR_RUT')
-        # url_dict = {}
 
         if periodo is not None:
-            url += f'?periodo={periodo}'
-        elif fechaDesde is not None and fechaHasta is not None:
-            url += f'?fechaDesde={fechaDesde}&fechaHasta={fechaHasta}'
-        if receptorCodigo is not None:
+            url += '?periodo=%(periodo)s' % {'periodo': periodo}
+        elif fecha_desde is not None and fecha_hasta is not None:
+            url += '?fecha_desde=%(fecha_desde)s&fecha_hasta=%(fecha_hasta)s' % {'fecha_desde': fecha_desde, 'fecha_hasta': fecha_hasta}
+        if receptor_codigo is not None:
             url += '?' if url.endswith('boletas') else '&'
-            url += f'receptorCodigo={receptorCodigo}'
+            url += 'receptor_codigo=%(receptor_codigo)s' % {'receptor_codigo': receptor_codigo}
         
-        header = {
-            'X-Bhexpress-Emisor': rut
-        }
-        r = self.client.get(url, header)
+        response = self.client.get(url)
         
-        return r.json()
+        return response.json()
     
-    '''
-    Emite una nueva Boleta de Honorarios Electrónica.
-
-    :param dict boleta: Información detallada de la boleta a emitir.
-    :return: Respuesta JSON con el encabezado y detalle de la boleta emitida.
-    :rtype: dict
-    '''
     def emitir(self, boleta):
+        '''
+        Emite una nueva Boleta de Honorarios Electrónica.
+
+        :param dict boleta: Información detallada de la boleta a emitir.
+        :return: Respuesta JSON con el encabezado y detalle de la boleta emitida.
+        :rtype: dict
+        '''
+
         url = '/bhe/emitir'
-        rut = getenv('BHEXPRESS_EMISOR_RUT')
-        header = {
-            'X-Bhexpress-Emisor': rut
-        }
-        r = self.client.post(url, boleta, header)
+        
+        response = self.client.post(url, data = boleta)
 
-        return r.json()
+        return response.json()
     
-    '''
-    Obtiene el PDF de una BHE emitida.
+    def pdf(self, numero_bhe):    
+        '''
+        Obtiene el PDF de una BHE emitida.
 
-    :param str numeroBhe: Número de la BHE registrada en BHExpress.
-    :return: Contenido del PDF de la BHE.
-    :rtype: bytes
-    '''
-    def pdf(self, numeroBhe):
-        url = f'/bhe/pdf/{numeroBhe}'
-        rut = getenv('BHEXPRESS_EMISOR_RUT')
-        header = {
-            'X-Bhexpress-Emisor': rut
-        }
-        r = self.client.get(url, header)
+        :param str numero_bhe: Número de la BHE registrada en BHExpress.
+        :return: Contenido del PDF de la BHE.
+        :rtype: bytes
+        '''
 
-        return r.content
+        url = '/bhe/pdf/%(bhe)s' % {'bhe': numero_bhe}
+
+        return self.client.get(url).content
     
-    '''
-    Envía por correo electrónico una BHE.
+    def email(self, numero_bhe, email):    
+        '''
+        Envía por correo electrónico una BHE.
 
-    :param str numeroBhe: Número de la BHE registrada en BHExpress.
-    :param str email: Correo del destinatario.
-    :return: Respuesta JSON con la confirmación del envío del email.
-    :rtype: dict
-    '''
-    def email(self, numeroBhe, email):
-        url = f'/bhe/email/{numeroBhe}'
-        rut = getenv('BHEXPRESS_EMISOR_RUT')
+        :param str numero_bhe: Número de la BHE registrada en BHExpress.
+        :param str email: Correo del destinatario.
+        :return: Respuesta JSON con la confirmación del envío del email.
+        :rtype: dict
+        '''
+
+        url = '/bhe/email/%(bhe)s' % {'bhe': numero_bhe}
         body = {
             'destinatario': {
                 'email': email
             }
         }
-        header = {
-            'X-Bhexpress-Emisor': rut
-        }
-        r = self.client.post(url, body, header)
 
-        return r.json()
+        response = self.client.post(url, data = body)
+
+        return response.json()
     
-    '''
-    Anula una BHE específica.
+    def anular(self, numero_bhe, causa):
+        '''
+        Anula una BHE específica.
 
-    :param str numeroBhe: Número de la BHE registrada en BHExpress.
-    :param int causa: Causa de la anulación de la BHE.
-    :return: Respuesta JSON con el encabezado de la boleta anulada.
-    :rtype: dict
-    '''
-    def anular(self, numeroBhe, causa):
-        url = f'/bhe/anular/{numeroBhe}'
-        rut = getenv('BHEXPRESS_EMISOR_RUT')
+        :param str numero_bhe: Número de la BHE registrada en BHExpress.
+        :param int causa: Causa de la anulación de la BHE.
+        :return: Respuesta JSON con el encabezado de la boleta anulada.
+        :rtype: dict
+        '''
+
+        url = '/bhe/anular/%(bhe)s' % {'bhe': numero_bhe}
         body = {
             'causa': causa
         }
-        header = {
-            'X-Bhexpress-Emisor': rut
-        }
-        r = self.client.post(url, body, header)
 
-        return r.json()
+        response = self.client.post(url, data = body)
+
+        return response.json()

@@ -45,7 +45,7 @@ el cual será reconocida automáticamente por el cliente:
 
     client = Boleta()
 
-    boletas = self.client.listar()
+    boletas = client.listar()
     print(boletas)
 
 Lo que hizo el ejemplo anterior es listar boletas emitidas en un resultado e imprimir dicho resultado en consola.
@@ -53,31 +53,70 @@ Lo que hizo el ejemplo anterior es listar boletas emitidas en un resultado e imp
 Ejemplos
 --------
 
-Estos ejemplos provienen de la versión PHP. Para crear la versión Python de BHExpress,
-se tomó en cuenta dichos ejemplos.
+Para crear la versión Python de BHExpress, se tomaron en cuenta ejemplos para 5 casos de uso que
+involucran boletas, y se llevaron a Python.
 Los ejemplos cubren los siguientes casos:
 
-- `001-boletas_listado.php`: obtener las boletas de un período.
-- `002-boleta_emitir.php`: emisitir una BHE.
-- `003-boleta_pdf.php`: descargar el PDF de una BHE.
-- `004-boleta_email.php`: enviar por email una BHE.
-- `005-boleta_anular.php`: anular una BHE.
+- `e01-boletas_listado.py`: obtener las boletas de un período.
+- `e02-boleta_emitir.py`: emitir una BHE.
+- `e03-boleta_pdf.py`: descargar el PDF de una BHE.
+- `e04-boleta_email.py`: enviar por email una BHE.
+- `e05-boleta_anular.py`: anular una BHE.
 
 Los ejemplos, por defecto, hacen uso de variables de entornos, si quieres usar
 esto debes tenerlas creadas, por ejemplo, en Windows 10, con:
 
 .. code:: shell
+
     set BHEXPRESS_API_URL="https://bhexpress.cl"
     set BHEXPRESS_API_TOKEN="" # aquí el token obtenido en https://bhexpress.cl/usuarios/perfil#token
     set BHEXPRESS_EMISOR_RUT="" # aquí el RUT del emisor de las BHE
 
-Ejemplo en la consola de Linux:
+Ejemplo de definición de variables de entorno en la consola de Linux:
 
 .. code:: shell
+    
     export BHEXPRESS_API_URL="https://bhexpress.cl"
     export BHEXPRESS_API_TOKEN="" # aquí el token obtenido en https://bhexpress.cl/usuarios/perfil#token
     export BHEXPRESS_EMISOR_RUT="" # aquí el RUT del emisor de las BHE
 
+Pruebas
+-------
+
+Las pruebas utilizan un archivo llamado `test.env`, que sirve para definir todas las variables de entorno
+necesarias para ejecutar estas pruebas. Las pruebas se crearon para probar los ejemplos vistos previamente 
+en el capítulo `Ejemplos`.
+
+Estas pruebas utilizan `unittest`, se ejecutan con el archivo `run.py`, y dependiendo de cómo se configure
+`test.env`, se pueden omitir ciertas pruebas. Asegúrate de definir `BHEXPRESS_API_URL`, `BHEXPRESS_API_TOKEN` 
+y `BHEXPRESS_EMISOR_RUT` en `test.env`, o no podrás efectuar las pruebas.
+
+A continuación se pondrán instrucciones de cómo probar el cliente de API de Python:
+
+* `test1_listar()`: 
+    - Prueba que permite obtener un listado de todas las boletas emitidas a través de BHExpress usando algunos filtros.
+    - Variables necesarias: `TEST_LISTAR_PERIODO`, `TEST_LISTAR_CODIGORECEPTOR`
+    - Variable de ejecución: `Ninguna`
+* `test2_emitir()`: 
+    - Prueba que permite emitir una BHE a un receptor.
+    - Variables necesarias: `TEST_EMITIR_FECHA_EMIS`, `TEST_EMITIR_EMISOR`, `TEST_EMITIR_RECEPTOR`, `TEST_EMITIR_RZNSOC_REC`, `TEST_EMITIR_DIR_REC`, `TEST_EMITIR_COM_REC` 
+    - Variable de ejecución: `TEST_EMITIR_EMISOR`
+* `test3_pdf()`: 
+    - Prueba que permite obtener una BHE y convertirla a un PDF.
+    - Variables necesarias: `Ninguna`
+    - Variable de ejecución: `TEST_PDF_PROBAR`
+* `test4_email()`: 
+    - Prueba que permite enviar un email a un destinatario con una BHE específica.
+    - Variables necesarias: `TEST_EMAIL_NUMEROBHE`, `TEST_EMAIL_CORREO`
+    - Variable de ejecución: `TEST_EMAIL_NUMEROBHE` y `TEST_EMAIL_CORREO`
+* `test5_anular()`: 
+    - Prueba que permite anular una BHE existente.
+    - Variables necesarias: `Ninguna`
+    - Variables de ejecución: `TEST_ANULAR_PROBAR`
+
+Las `variables necesarias` son aquellas variables que se necesitan para ejecutar las pruebas.
+Las `variables de ejecución` son aquellas variables que permitirán ejecutar u omitir las pruebas a las que pertenecen.
+Si las variables de ejecución tienen un valor específico o son texto en blanco, entonces la prueba será omitida, pero no fallida.
 
 Licencia
 --------

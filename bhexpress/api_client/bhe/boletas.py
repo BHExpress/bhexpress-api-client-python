@@ -18,6 +18,7 @@
 #
 
 from .. import ApiBase
+from urllib.parse import urlencode
 
 class Boleta(ApiBase):
     '''
@@ -46,17 +47,19 @@ class Boleta(ApiBase):
         :rtype: dict
         :exception ApiException: Arroja un error cuando las fechas de fecha_desde y fecha_hasta no son correctas, o cuando se coloca sólo una de las dos.
         '''
-
         url = '/bhe/boletas'
-
+        query = {}
         if periodo is not None:
-            url += '?periodo=%(periodo)s' % {'periodo': periodo}
+            query['periodo'] = periodo
         elif fecha_desde is not None and fecha_hasta is not None:
-            url += '?fecha_desde=%(fecha_desde)s&fecha_hasta=%(fecha_hasta)s' % {'fecha_desde': fecha_desde, 'fecha_hasta': fecha_hasta}
+            query['fecha_desde'] = fecha_desde
+            query['fecha_hasta'] = fecha_hasta
         if receptor_codigo is not None:
-            url += '?' if url.endswith('boletas') else '&'
-            url += 'receptor_codigo=%(receptor_codigo)s' % {'receptor_codigo': receptor_codigo}
+            query['receptor_codigo'] = receptor_codigo
         
+        query_string = urlencode(query)
+
+        url += '?%(query)s' % {'url': url, 'query': query_string}
         response = self.client.get(url)
         
         return response.json()
@@ -69,10 +72,7 @@ class Boleta(ApiBase):
         :return: Respuesta JSON con el encabezado y detalle de la boleta emitida.
         :rtype: dict
         '''
-
-        url = '/bhe/emitir'
-        
-        response = self.client.post(url, data = boleta)
+        response = self.client.post('/bhe/emitir', data = boleta)
 
         return response.json()
     
@@ -84,7 +84,6 @@ class Boleta(ApiBase):
         :return: Contenido del PDF de la BHE.
         :rtype: bytes
         '''
-
         url = '/bhe/pdf/%(bhe)s' % {'bhe': numero_bhe}
 
         return self.client.get(url).content
@@ -98,7 +97,6 @@ class Boleta(ApiBase):
         :return: Respuesta JSON con la confirmación del envío del email.
         :rtype: dict
         '''
-
         url = '/bhe/email/%(bhe)s' % {'bhe': numero_bhe}
         body = {
             'destinatario': {
@@ -119,7 +117,6 @@ class Boleta(ApiBase):
         :return: Respuesta JSON con el encabezado de la boleta anulada.
         :rtype: dict
         '''
-
         url = '/bhe/anular/%(bhe)s' % {'bhe': numero_bhe}
         body = {
             'causa': causa

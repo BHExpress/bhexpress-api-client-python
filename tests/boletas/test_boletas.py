@@ -58,12 +58,12 @@ class TestBheBoletas(TestCase):
         print('')
         try:
             boletas = self.client.listar(periodo = self.lis_periodo, receptor_codigo = self.lis_codigo_receptor)
-            if len(boletas['results']) > 0:
+            if len(boletas['results']) == 0:
                 print('La lista de BHEs en BHExpress está vacía.')
             if self.verbose:
                 print('test1_listar(): boletas', boletas)
         except ApiException as e:
-            self.fail(f'ApiException: {e}')
+            self.fail('ApiException: %(e)s' % {'e': e})
     
     # CASO 2: Emitir una boleta
     def test2_emitir(self):
@@ -122,7 +122,7 @@ class TestBheBoletas(TestCase):
             if self.verbose:
                 print('test2_emitir(): emitir', emitir)
         except ApiException as e:
-            self.fail(f'ApiException: {e}')
+            self.fail('ApiException: %(e)s' % {'e': e})
     
     # CASO 3: bajar pdf de una boleta
     def test3_pdf(self):
@@ -136,14 +136,14 @@ class TestBheBoletas(TestCase):
             lista_bhe = self.client.listar()
             boleta_numero = lista_bhe['results'][0]['numero']
             html = self.client.pdf(boleta_numero)
-            filename = f'bhe_emitidas_test_pdf_{boleta_numero}.pdf'
+            filename = 'bhe_emitidas_test_pdf_%(boleta_numero)s.pdf' % {'boleta_numero': boleta_numero}
             with open(filename, 'wb') as f:
                 f.write(html)
             file_remove(filename)
             if self.verbose:
                 print('test3_pdf(): filename', filename)
         except ApiException as e:
-            self.fail(f'ApiException: {e}')
+            self.fail('ApiException: %(e)s' % {'e': e})
     
     # CASO 4: enviar por email
     def test4_email(self):
@@ -158,7 +158,7 @@ class TestBheBoletas(TestCase):
             if self.verbose:
                 print('test4_email(): email', email)
         except ApiException as e:
-            self.fail(f'ApiException: {e}')
+            self.fail('ApiException: %(e)s' % {'e': e})
     
     # CASO 5: anular
     def test5_anular(self):
@@ -178,4 +178,4 @@ class TestBheBoletas(TestCase):
                 if self.verbose:
                     print('test5_anular(): anular', anular)
         except ApiException as e:
-            self.fail(f'ApiException: {e}')
+            self.fail('ApiException: %(e)s' % {'e': e})

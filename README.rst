@@ -50,21 +50,11 @@ el cual será reconocida automáticamente por el cliente:
 
 Lo que hizo el ejemplo anterior es listar boletas emitidas en un resultado e imprimir dicho resultado en consola.
 
-Ejemplos
---------
+Variables de entorno
+--------------------
 
-Para crear la versión Python de BHExpress, se tomaron en cuenta ejemplos para 5 casos de uso que
-involucran boletas, y se llevaron a Python.
-Los ejemplos cubren los siguientes casos:
-
-- `e01-boletas_listado.py`: obtener las boletas de un período.
-- `e02-boleta_emitir.py`: emitir una BHE.
-- `e03-boleta_pdf.py`: descargar el PDF de una BHE.
-- `e04-boleta_email.py`: enviar por email una BHE.
-- `e05-boleta_anular.py`: anular una BHE.
-
-Los ejemplos, por defecto, hacen uso de variables de entornos, si quieres usar
-esto debes tenerlas creadas, por ejemplo, en Windows 10, con:
+La aplicación y las pruebas hacen uso de variables de entornos. Si quieres usar
+estos, debes tenerlas creadas. En Windows 10 se hace con:
 
 .. code:: shell
 
@@ -90,6 +80,20 @@ en el capítulo `Ejemplos`.
 Estas pruebas utilizan `unittest`, se ejecutan con el archivo `run.py`, y dependiendo de cómo se configure
 `test.env`, se pueden omitir ciertas pruebas. Asegúrate de definir `BHEXPRESS_API_URL`, `BHEXPRESS_API_TOKEN` 
 y `BHEXPRESS_EMISOR_RUT` en `test.env`, o no podrás efectuar las pruebas.
+
+Para ejecutar las pruebas unitarias, debes ejecutar el siguiente código en consola desde la raíz del proyecto:
+
+.. code:: shell
+
+    python tests/run.py
+
+Si quieres ejecutar una prueba específica, deberás especificar el nombre y ruta:
+
+.. code:: shell
+
+    python tests/run.py boletas.test_boletas.TestBheBoletas.test1_listar
+
+Para ejecutar otros ejemplos, debes reemplazar `test1_listar` por el nombre de alguna de las otras pruebas descritas posteriormente.
 
 A continuación se pondrán instrucciones de cómo probar el cliente de API de Python:
 

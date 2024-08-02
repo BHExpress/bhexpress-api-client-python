@@ -65,7 +65,7 @@ estos, debes tenerlas creadas. En Windows 10 se hace con:
 Ejemplo de definición de variables de entorno en la consola de Linux:
 
 .. code:: shell
-    
+
     export BHEXPRESS_API_URL="https://bhexpress.cl"
     export BHEXPRESS_API_TOKEN="" # aquí el token obtenido en https://bhexpress.cl/usuarios/perfil#token
     export BHEXPRESS_EMISOR_RUT="" # aquí el RUT del emisor de las BHE
@@ -74,11 +74,11 @@ Pruebas
 -------
 
 Las pruebas utilizan un archivo llamado `test.env`, que sirve para definir todas las variables de entorno
-necesarias para ejecutar estas pruebas. Las pruebas se crearon para probar los ejemplos vistos previamente 
+necesarias para ejecutar estas pruebas. Las pruebas se crearon para probar los ejemplos vistos previamente
 en el capítulo `Ejemplos`.
 
 Estas pruebas utilizan `unittest`, se ejecutan con el archivo `run.py`, y dependiendo de cómo se configure
-`test.env`, se pueden omitir ciertas pruebas. Asegúrate de definir `BHEXPRESS_API_URL`, `BHEXPRESS_API_TOKEN` 
+`test.env`, se pueden omitir ciertas pruebas. Asegúrate de definir `BHEXPRESS_API_URL`, `BHEXPRESS_API_TOKEN`
 y `BHEXPRESS_EMISOR_RUT` en `test.env`, o no podrás efectuar las pruebas.
 
 Para ejecutar las pruebas unitarias, debes ejecutar el siguiente código en consola desde la raíz del proyecto:
@@ -97,23 +97,23 @@ Para ejecutar otros ejemplos, debes reemplazar `test1_listar` por el nombre de a
 
 A continuación se pondrán instrucciones de cómo probar el cliente de API de Python:
 
-* `test1_listar()`: 
+* `test1_listar()`:
     - Prueba que permite obtener un listado de todas las boletas emitidas a través de BHExpress usando algunos filtros.
     - Variables necesarias: `TEST_LISTAR_PERIODO`, `TEST_LISTAR_CODIGORECEPTOR`
     - Variable de ejecución: `Ninguna`
-* `test2_emitir()`: 
+* `test2_emitir()`:
     - Prueba que permite emitir una BHE a un receptor.
-    - Variables necesarias: `TEST_EMITIR_FECHA_EMIS`, `TEST_EMITIR_EMISOR`, `TEST_EMITIR_RECEPTOR`, `TEST_EMITIR_RZNSOC_REC`, `TEST_EMITIR_DIR_REC`, `TEST_EMITIR_COM_REC` 
+    - Variables necesarias: `TEST_EMITIR_FECHA_EMIS`, `TEST_EMITIR_EMISOR`, `TEST_EMITIR_RECEPTOR`, `TEST_EMITIR_RZNSOC_REC`, `TEST_EMITIR_DIR_REC`, `TEST_EMITIR_COM_REC`
     - Variable de ejecución: `TEST_EMITIR_EMISOR`
-* `test3_pdf()`: 
+* `test3_pdf()`:
     - Prueba que permite obtener una BHE y convertirla a un PDF.
     - Variables necesarias: `Ninguna`
     - Variable de ejecución: `TEST_PDF_PROBAR`
-* `test4_email()`: 
+* `test4_email()`:
     - Prueba que permite enviar un email a un destinatario con una BHE específica.
     - Variables necesarias: `TEST_EMAIL_NUMEROBHE`, `TEST_EMAIL_CORREO`
     - Variable de ejecución: `TEST_EMAIL_NUMEROBHE` y `TEST_EMAIL_CORREO`
-* `test5_anular()`: 
+* `test5_anular()`:
     - Prueba que permite anular una BHE existente.
     - Variables necesarias: `Ninguna`
     - Variables de ejecución: `TEST_ANULAR_PROBAR`
@@ -142,7 +142,7 @@ Debería haber recibido una copia de la GNU Lesser General Public License
 Enlaces
 -------
 
-- `Sitio web API Gateway <https://www.bhexpress.cl>`_.
+- `Sitio web BHExpress <https://www.bhexpress.cl>`_.
 - `Código fuente en GitHub <https://github.com/bhexpress/bhexpress-api-client-python>`_.
 - `Paquete en PyPI <https://pypi.org/project/bhexpress>`_.
 - `Documentación en Read the Docs <https://bhexpress.readthedocs.io/es/latest>`_.

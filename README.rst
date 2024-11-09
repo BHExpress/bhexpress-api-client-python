@@ -1,3 +1,5 @@
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FBHExpress%2Fbhexpress-api-client-python.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FBHExpress%2Fbhexpress-api-client-python?ref=badge_shield)
+
 BHExpress: Cliente de API en Python
 =====================================
 
@@ -146,3 +148,7 @@ Enlaces
 - `Código fuente en GitHub <https://github.com/bhexpress/bhexpress-api-client-python>`_.
 - `Paquete en PyPI <https://pypi.org/project/bhexpress>`_.
 - `Documentación en Read the Docs <https://bhexpress.readthedocs.io/es/latest>`_.
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FBHExpress%2Fbhexpress-api-client-python.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FBHExpress%2Fbhexpress-api-client-python?ref=badge_large)

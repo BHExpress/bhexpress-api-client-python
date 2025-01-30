@@ -28,16 +28,26 @@ class ApiClient:
     '''
     Cliente para interactuar con la API de BHExpress.
 
-    :param str token: Token de autenticación del usuario. Si no se proporciona, se intentará obtener de una variable de entorno.
-    :param str url: URL base de la API. Si no se proporciona, se usará una URL por defecto.
-    :param str version: Versión de la API. Si no se proporciona, se usará una versión por defecto.
-    :param bool raise_for_status: Si se debe lanzar una excepción automáticamente para respuestas de error HTTP. Por defecto es True.
+    :param str token: Token de autenticación del usuario. Si no se proporciona,
+    se intentará obtener de una variable de entorno.
+    :param str url: URL base de la API. Si no se proporciona, se usará una
+    URL por defecto.
+    :param str version: Versión de la API. Si no se proporciona, se usará
+    una versión por defecto.
+    :param bool raise_for_status: Si se debe lanzar una excepción
+    automáticamente para respuestas de error HTTP. Por defecto es True.
     '''
 
     __DEFAULT_URL = 'https://bhexpress.cl'
     __DEFAULT_VERSION = 'v1'
 
-    def __init__(self, token = None, url = None, version = None, raise_for_status = True):
+    def __init__(
+            self,
+            token = None,
+            url = None,
+            version = None,
+            raise_for_status = True
+        ):
         '''
         Constructor para inicializar el Cliente de la API de BHExpress.
         '''
@@ -59,7 +69,9 @@ class ApiClient:
         '''
         token = token or getenv('BHEXPRESS_API_TOKEN')
         if not token:
-            raise ApiException('Se debe configurar la variable de entorno: BHEXPRESS_API_TOKEN.')
+            raise ApiException(
+                'Se debe configurar la variable de entorno: BHEXPRESS_API_TOKEN.'
+            )
         return str(token).strip()
 
     def __validate_url(self, url):
@@ -71,7 +83,9 @@ class ApiClient:
         :rtype: str
         :raises ApiException: Si la URL no es válida o está ausente.
         '''
-        return str(url).strip() if url else getenv('BHEXPRESS_API_URL', self.__DEFAULT_URL).strip()
+        return str(url).strip() if url else getenv(
+            'BHEXPRESS_API_URL', self.__DEFAULT_URL
+        ).strip()
 
     def __validate_rut(self):
         '''
@@ -84,7 +98,9 @@ class ApiClient:
         '''
         rut = getenv('BHEXPRESS_EMISOR_RUT', '')
         if rut == '':
-            raise ApiException('Se debe configurar la variable de entorno: BHEXPRESS_EMISOR_RUT.')
+            raise ApiException(
+                'Se debe configurar la variable de entorno: BHEXPRESS_EMISOR_RUT.'
+            )
         return str(rut).strip()
 
     def __generate_headers(self):
@@ -134,7 +150,12 @@ class ApiClient:
         :return: Respuesta de la solicitud.
         :rtype: requests.Response
         '''
-        return self.__request('POST', resource, data = data, headers = headers)
+        return self.__request(
+            'POST',
+            resource,
+            data = data,
+            headers = headers
+        )
 
     def put(self, resource, data = None, headers = None):
         '''
@@ -146,7 +167,12 @@ class ApiClient:
         :return: Respuesta de la solicitud.
         :rtype: requests.Response
         '''
-        return self.__request('PUT', resource, data = data, headers = headers)
+        return self.__request(
+            'PUT',
+            resource,
+            data = data,
+            headers = headers
+        )
 
     def __request(self, method, resource, data = None, headers = None):
         '''
@@ -158,23 +184,36 @@ class ApiClient:
         :param dict headers: Cabeceras adicionales para la solicitud (opcional).
         :return: Respuesta de la solicitud.
         :rtype: requests.Response
-        :raises ApiException: Si el método HTTP no es soportado o si hay un error de conexión.
+        :raises ApiException: Si el método HTTP no es soportado o si hay
+        un error de conexión.
         '''
-        api_path = '/api/%(version)s%(resource)s' % {'version': self.version, 'resource': resource}
-        full_url = urllib.parse.urljoin(self.url + '/', api_path.lstrip('/'))
+        api_path = '/api/%(version)s%(resource)s' % {
+            'version': self.version, 'resource': resource
+        }
+        full_url = urllib.parse.urljoin(
+            self.url + '/', api_path.lstrip('/')
+        )
         headers = headers or {}
         headers = {**self.headers, **headers}
         if data and not isinstance(data, str):
             data = json.dumps(data)
         try:
-            response = requests.request(method, full_url, data = data, headers = headers)
+            response = requests.request(
+                method, full_url, data = data, headers = headers
+            )
             return self.__check_and_return_response(response)
         except requests.exceptions.ConnectionError as error:
-            raise ApiException('Error de conexión: %(error)s' % {'error': error})
+            raise ApiException(
+                'Error de conexión: %(error)s' % {'error': error}
+            )
         except requests.exceptions.Timeout as error:
-            raise ApiException('Error de timeout: %(error)s' % {'error': error})
+            raise ApiException(
+                'Error de timeout: %(error)s' % {'error': error}
+            )
         except requests.exceptions.RequestException as error:
-            raise ApiException('Error en la solicitud: %(error)s' % {'error': error})
+            raise ApiException(
+                'Error en la solicitud: %(error)s' % {'error': error}
+            )
 
     def __check_and_return_response(self, response):
         '''
@@ -193,8 +232,12 @@ class ApiClient:
                     error = response.json()
                     message = error.get('message', '') or error.get('exception', '') or 'Error desconocido.'
                 except json.decoder.JSONDecodeError:
-                    message = 'Error al decodificar los datos en JSON: %(response)s' % {'response': response.text}
-                raise ApiException('Error HTTP: %(message)s' % {'message': message})
+                    message = 'Error al decodificar los datos en JSON: %(response)s' % {
+                        'response': response.text
+                    }
+                raise ApiException('Error HTTP: %(message)s' % {
+                    'message': message
+                })
         return response
 
 class ApiException(Exception):
@@ -230,7 +273,9 @@ class ApiException(Exception):
         :return: Una cadena que representa el error de una manera clara y concisa.
         '''
         if self.code is not None:
-            return '[BHExpress] Error %(code)s: %(message)s' % {'code': self.code, 'message': self.message}
+            return '[BHExpress] Error %(code)s: %(message)s' % {
+                'code': self.code, 'message': self.message
+            }
         else:
             return '[BHExpress] %(message)s' % {'message': self.message}
 
@@ -241,9 +286,20 @@ class ApiBase(ABC):
     :param str api_token: Token de autenticación para la API.
     :param str api_url: URL base para la API.
     :param str api_version: Versión de la API.
-    :param bool api_raise_for_status: Si se debe lanzar una excepción automáticamente para respuestas de error HTTP. Por defecto es True.
+    :param bool api_raise_for_status: Si se debe lanzar una excepción
+    automáticamente para respuestas de error HTTP. Por defecto es True.
     '''
 
-    def __init__(self, api_token = None, api_url = None, api_version = None, api_raise_for_status = True):
-        self.client = ApiClient(api_token, api_url, api_version, api_raise_for_status)
-
+    def __init__(
+            self,
+            api_token = None,
+            api_url = None,
+            api_version = None,
+            api_raise_for_status = True
+        ):
+        self.client = ApiClient(
+            api_token,
+            api_url,
+            api_version,
+            api_raise_for_status
+        )

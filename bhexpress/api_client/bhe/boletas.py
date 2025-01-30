@@ -22,48 +22,58 @@ from urllib.parse import urlencode
 
 class Boleta(ApiBase):
     '''
-    Módulo que permite listar todas las BHE con filtros específicos, emitir una BHE, obtener un PDF de una BHE, enviar una BHE a un email, y anular una BHE emitida.
-    
-    :param str api_token: Token de autenticación del usuario. Si no se proporciona, se intentará obtener de una variable de entorno.
-    :param str api_url: URL base de la API. Si no se proporciona, se usará una URL por defecto.
-    :param str api_version: Versión de la API. Si no se proporciona, se usará una versión por defecto.
-    :param bool api_raise_for_status: Si se debe lanzar una excepción automáticamente para respuestas de error HTTP. Por defecto es True.
+    Módulo que permite gestionar BHEs emitidas y calcular montos brutos y líquidos.
+
+    :param str api_token: Token de autenticación del usuario. Si no se proporciona,
+    se intentará obtener de una variable de entorno.
+    :param str api_url: URL base de la API. Si no se proporciona, se usará
+    una URL por defecto.
+    :param str api_version: Versión de la API. Si no se proporciona, se usará
+    una versión por defecto.
+    :param bool api_raise_for_status: Si se debe lanzar una excepción automáticamente
+    para respuestas de error HTTP. Por defecto es True.
     '''
 
     def __init__(self):
         super().__init__()
 
-    def listar(self, periodo = None, fecha_desde = None, fecha_hasta = None, receptor_codigo = None):
+    def listar(self, filtros = {}):
         '''
-        Recurso que permite obtener el listado paginado de boletas de honorarios electrónicas emitidas.
+        Recurso que permite obtener el listado paginado de boletas de honorarios
+        electrónicas emitidas.
 
-        Los parámetros de entrada son filtros para obtener boletas más específicas.
-
-        :param str periodo: Período por el cuál consultar las boletas. Puede ser: 'AAAAMM' o 'AAAA'
-        :param str fecha_desde:Fecha desde cuándo consultar las boletas. Formato: 'AAAA-MM-DD'
-        :param str fecha_hasta:Fecha hasta cuándo consultar las boletas. Formato: 'AAAA-MM-DD'
-        :param str receptor_codigo: Código del receptor. Generalmente es el RUT del receptor sin DV.
+        :param dict filtros: Filtros de búsqueda.
         :return: Respuesta JSON con el listado de boletas emitidas.
         :rtype: dict
-        :exception ApiException: Arroja un error cuando las fechas de fecha_desde y fecha_hasta no son correctas, o cuando se coloca sólo una de las dos.
+        :exception ApiException: Arroja un error cuando los filtros son incorrectos,
+        o cuando hay error de conexión.
         '''
         url = '/bhe/boletas'
         query = {}
-        if periodo is not None:
-            query['periodo'] = periodo
-        elif fecha_desde is not None and fecha_hasta is not None:
-            query['fecha_desde'] = fecha_desde
-            query['fecha_hasta'] = fecha_hasta
-        if receptor_codigo is not None:
-            query['receptor_codigo'] = receptor_codigo
-        
-        query_string = urlencode(query)
 
-        url += '?%(query)s' % {'url': url, 'query': query_string}
+        if len(filtros) > 0:
+            query_string = urlencode(query)
+            url += '?%(query)s' % {'url': url, 'query': query_string}
+
         response = self.client.get(url)
-        
+
         return response.json()
-    
+
+    def detalle(self, numeroBhe):
+        '''
+        Recurso que permite obtener el detalle de una boleta de honorarios
+        electrónica emitida.
+
+        :param int numeroBhe: Número de BHE a consultar.
+        :return: Respuesta JSON con el detalle de la boleta emitida.
+        :rtype: dict
+        '''
+        url = '/bhe/boletas/%(numeroBhe)s' % {'numeroBhe': numeroBhe}
+
+        response = self.client.get(url)
+
+        return response.json()
+
     def emitir(self, boleta):
         '''
         Emite una nueva Boleta de Honorarios Electrónica.
@@ -75,20 +85,20 @@ class Boleta(ApiBase):
         response = self.client.post('/bhe/emitir', data = boleta)
 
         return response.json()
-    
-    def pdf(self, numero_bhe):    
+
+    def pdf(self, numero_bhe):
         '''
         Obtiene el PDF de una BHE emitida.
 
-        :param str numero_bhe: Número de la BHE registrada en BHExpress.
+        :param int numero_bhe: Número de la BHE registrada en BHExpress.
         :return: Contenido del PDF de la BHE.
         :rtype: bytes
         '''
         url = '/bhe/pdf/%(bhe)s' % {'bhe': numero_bhe}
 
         return self.client.get(url).content
-    
-    def email(self, numero_bhe, email):    
+
+    def email(self, numero_bhe, email):
         '''
         Envía por correo electrónico una BHE.
 
@@ -107,7 +117,7 @@ class Boleta(ApiBase):
         response = self.client.post(url, data = body)
 
         return response.json()
-    
+
     def anular(self, numero_bhe, causa):
         '''
         Anula una BHE específica.
@@ -123,5 +133,39 @@ class Boleta(ApiBase):
         }
 
         response = self.client.post(url, data = body)
+
+        return response.json()
+
+    def montoLiquido(self, bruto, periodo):
+        '''
+        Recurso que permite calcular el monto líquido a partir de un monto bruto.
+
+        :param int bruto: Monto bruto a convertir.
+        :param str periodo: Periodo donde buscar. Formato "AAAAMM".
+        :return: Respuesta JSON con los montos calculados, retenciones, tasas y periodos.
+        :rtype: dict
+        '''
+        url = '/bhe/liquido/%(bruto)s/%(periodo)s' % {
+            'bruto': bruto, 'periodo': periodo
+        }
+
+        response = self.client.get(url)
+
+        return response.json()
+
+    def montoBruto(self, liquido, periodo):
+        '''
+        Recurso que permite calcular el monto bruto a partir de un monto líquido.
+
+        :param int liquido: Monto liquido a convertir.
+        :param str periodo: Periodo donde buscar. Formato "AAAAMM".
+        :return: Respuesta JSON con los montos calculados, retenciones, tasas y periodos.
+        :rtype: dict
+        '''
+        url = '/bhe/bruto/%(liquido)s/%(periodo)s' % {
+            'liquido': liquido, 'periodo': periodo
+        }
+
+        response = self.client.get(url)
 
         return response.json()

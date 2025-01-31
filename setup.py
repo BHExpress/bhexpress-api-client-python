@@ -34,7 +34,7 @@ setup(
     name='bhexpress',
 
     # Versions should comply with PEP440
-    version='2.0.0',
+    version='2.0.1',
 
     description='Cliente para realizar la integración con los servicios web de BHExpress desde Python.',
     long_description="\n"+long_description,

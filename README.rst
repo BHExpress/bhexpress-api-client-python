@@ -12,7 +12,7 @@ BHExpress: Cliente de API en Python
 
 Cliente para realizar la integración con los servicios web de `BHExpress <https://www.bhexpress.cl>`_ desde Python.
 
-Revisa la `documentación <https://api-client-python.docs.bhexpress.cl/guide/index.html>`_ de la biblioteca para más información, sus características y detalles de su uso.
+Revisa la `documentación <https://api-client-python.docs.bhexpress.cl/guide/>`_ de la biblioteca para más información, sus características y detalles de su uso.
 
 Licencia
 --------
@@ -37,4 +37,4 @@ Enlaces
 - `Sitio web BHExpress <https://www.bhexpress.cl>`_.
 - `Código fuente en GitHub <https://github.com/bhexpress/bhexpress-api-client-python>`_.
 - `Paquete en PyPI <https://pypi.org/project/bhexpress>`_.
-- `Documentación en Read the Docs <https://bhexpress.readthedocs.io/es/latest>`_.
+- `Documentación <https://api-client-python.docs.bhexpress.cl/>`_.

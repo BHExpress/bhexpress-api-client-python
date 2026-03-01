@@ -12,10 +12,6 @@ BHExpress: Cliente de API en Python - Documentación
     :target: https://pypi.org/project/bhexpress
 .. image:: https://img.shields.io/pypi/pyversions/bhexpress.svg
     :target: https://pypi.org/project/bhexpress
-.. image:: https://scrutinizer-ci.com/g/bhexpress/bhexpress-api-client-python/badges/quality-score.png?b=master
-    :target: https://scrutinizer-ci.com/g/bhexpress/bhexpress-api-client-python/
-.. image:: https://scrutinizer-ci.com/g/bhexpress/bhexpress-api-client-python/badges/coverage.png?b=master
-    :target: https://scrutinizer-ci.com/g/bhexpress/bhexpress-api-client-python/
 .. image:: https://img.shields.io/pypi/l/bhexpress.svg
     :target: https://raw.githubusercontent.com/bhexpress/bhexpress-api-client-python/master/COPYING
 
@@ -50,4 +46,4 @@ Enlaces
 - `Sitio web BHExpress <https://www.bhexpress.cl>`_.
 - `Código fuente en GitHub <https://github.com/bhexpress/bhexpress-api-client-python>`_.
 - `Paquete en PyPI <https://pypi.org/project/bhexpress>`_.
-- `Documentación <https://developers.bhexpress.cl/>`_.
+- `Documentación <https://api-client-python.docs.bhexpress.cl/>`_.

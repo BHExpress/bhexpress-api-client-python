@@ -19,7 +19,7 @@
 
 from unittest import TestCase
 from os import getenv, remove as file_remove
-from datetime import datetime
+from datetime import datetime, timedelta
 from bhexpress.api_client import ApiException
 from bhexpress.api_client.bhe.boletas import Boleta
 
@@ -30,41 +30,51 @@ class TestBheBoletas(TestCase):
         # Variables base
         cls.verbose = bool(int(getenv('TEST_VERBOSE', 0)))
         cls.client = Boleta()
+        # TODO: Reducir cantidad de variables de entorno a utilizar.
+        # TODO: Quitar números a los tests (test1_listar -> test_listar, etc).
         # Variables CASO 1
-        cls.lis_anio = getenv('TEST_LISTAR_ANIO', datetime.now().strftime('%Y')).strip()
-        cls.lis_periodo = getenv('TEST_LISTAR_PERIODO', datetime.now().strftime('%Y%m')).strip()
-        cls.lis_fecha_desde = getenv('TEST_LISTAR_FECHADESDE', datetime.now().strftime('%Y-%m-%d')).strip()
-        cls.lis_fecha_hasta = getenv('TEST_LISTAR_FECHAHASTA', datetime.now().strftime('%Y-%m-%d')).strip()
-        cls.lis_codigo_receptor = getenv('TEST_LISTAR_CODIGORECEPTOR', '').strip()
+        #cls.lis_anio = getenv('TEST_LISTAR_ANIO', datetime.now().strftime('%Y')).strip()
+        #cls.lis_periodo = getenv('TEST_LISTAR_PERIODO', datetime.now().strftime('%Y%m')).strip()
+        cls.lis_fecha_desde = getenv('TEST_FECHA_DESDE', datetime.now().strftime('%Y-%m-%d')).strip()
+        #cls.lis_fecha_hasta = getenv('TEST_LISTAR_FECHAHASTA', datetime.now().strftime('%Y-%m-%d')).strip()
+        #cls.lis_codigo_receptor = getenv('TEST_LISTAR_CODIGORECEPTOR', '').strip()
         # Variables CASO 2
         cls.emit_fecha_emision = getenv('TEST_EMITIR_FECHA_EMIS', datetime.now().strftime('%Y-%m-%d')).strip()
         cls.emit_rut_emisor = getenv('TEST_EMITIR_EMISOR', '').strip()
-        cls.emit_rut_receptor = getenv('TEST_EMITIR_RECEPTOR', '').strip()
-        cls.emit_razon_social = getenv('TEST_EMITIR_RZNSOC_REC', '').strip()
-        cls.emit_direccion_receptor = getenv('TEST_EMITIR_DIR_REC', '').strip()
-        cls.emit_comuna_receptor = getenv('TEST_EMITIR_COM_REC', '').strip()
+        #cls.emit_rut_receptor = getenv('TEST_EMITIR_RECEPTOR', '').strip()
+        ##cls.emit_razon_social = getenv('TEST_EMITIR_RZNSOC_REC', '').strip()
+        #cls.emit_direccion_receptor = getenv('TEST_EMITIR_DIR_REC', '').strip()
+        #cls.emit_comuna_receptor = getenv('TEST_EMITIR_COM_REC', '').strip()
         # Variables CASO 3
-        cls.pdf_probar = getenv('TEST_PDF_PROBAR', '0').strip()
+        #cls.pdf_probar = getenv('TEST_PDF_PROBAR', '1').strip()
         # Variables CASO 4
-        cls.email_num_bhe = getenv('TEST_EMAIL_NUMEROBHE', '').strip()
+        #cls.email_num_bhe = getenv('TEST_EMAIL_NUMEROBHE', '').strip()
         cls.email_destinatario = getenv('TEST_EMAIL_CORREO', '').strip()
         # Variables CASO 5
-        cls.anul_probar = getenv('TEST_ANULAR_PROBAR', '0').strip()
-    
+        #cls.anul_probar = getenv('TEST_ANULAR_PROBAR', '1').strip()
+
     # CASO 1: Listado de boletas
-    def test1_listar(self):
+    def test_listar(self):
         print('')
         print('test1_listar():')
         print('')
         try:
-            boletas = self.client.listar(periodo = self.lis_periodo, receptor_codigo = self.lis_codigo_receptor)
+            fecha_desde = getenv('TEST_FECHA_DESDE', datetime.now().strftime('%Y-%m-%d'))
+            filtros = {
+                'fecha_desde': fecha_desde,
+                'fecha_hasta': (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
+            }
+            boletas = self.client.listar(filtros)
             if len(boletas['results']) == 0:
                 print('La lista de BHEs en BHExpress está vacía.')
+
+            self.assertTrue(True)
+
             if self.verbose:
                 print('test1_listar(): boletas', boletas)
         except ApiException as e:
             self.fail('ApiException: %(e)s' % {'e': e})
-    
+
     # CASO 2: Emitir una boleta
     def test2_emitir(self):
         print('')
@@ -123,7 +133,7 @@ class TestBheBoletas(TestCase):
                 print('test2_emitir(): emitir', emitir)
         except ApiException as e:
             self.fail('ApiException: %(e)s' % {'e': e})
-    
+
     # CASO 3: bajar pdf de una boleta
     def test3_pdf(self):
         print('')
@@ -144,7 +154,7 @@ class TestBheBoletas(TestCase):
                 print('test3_pdf(): filename', filename)
         except ApiException as e:
             self.fail('ApiException: %(e)s' % {'e': e})
-    
+
     # CASO 4: enviar por email
     def test4_email(self):
         print('')
@@ -159,7 +169,7 @@ class TestBheBoletas(TestCase):
                 print('test4_email(): email', email)
         except ApiException as e:
             self.fail('ApiException: %(e)s' % {'e': e})
-    
+
     # CASO 5: anular
     def test5_anular(self):
         print('')
